@@ -74,3 +74,7 @@ The target repository was empty and accessible with write permission when checke
 The reviewed upload set contains 119 files (approximately 15 MB before Git compression), including source, tests, both current and clearly labelled historical presentation materials, the manual and proposal copies. The initial local commit and subsequent review-evidence commit are preparation records under the configured repository account; they are not six members' individual contribution history. Six local module branches start at the reviewed baseline. GitHub Actions is configured but has not been executed remotely during this preparation.
 
 本次待上传共119个文件，压缩前约15 MB；本地提交仅记录当前整理后的基线，不冒充六名组员分别提交的历史。六个本地模块分支从检查后的基线开始。GitHub Actions已配置，准备阶段尚未在线运行。
+
+网络待处理：最后两次本机Git远程读取分别遇到连接重置、无法连接GitHub的443端口。GitHub接口仍可读取仓库元数据并确认写权限，但不能据此认定本机Git推送认证或传输已通过。恢复连接后先检查远程是否仍为空，再执行首次推送。此限制不影响已经通过的本地安装、测试、文件审查和提交准备。
+
+Network follow-up: two final local Git remote-read attempts failed with a reset and a GitHub port-443 connection error. Connector metadata remained accessible with write permission. Local Git push transport/authentication therefore remains unverified. Restore connectivity and recheck remote history before the first push; the local preparation remains valid.

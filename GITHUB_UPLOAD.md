@@ -6,6 +6,10 @@
 
 The target is public. The application directory is the repository root. Source, fictional examples, presentation materials and the manual are included. Private configuration, local records/backups, environments, caches and intermediate recordings are excluded. No open-source licence has been selected for the team.
 
+网络状态（11月10日检查）：GitHub接口可以读取仓库并确认写权限，但本机Git直连先后出现连接重置及无法连接443端口。实际上传前先恢复Git网络连接，运行 `git ls-remote origin` 确认可访问。该问题发生在网络连接阶段，尚未验证Git推送登录；不能将接口权限检查等同于本机Git推送已成功。
+
+Network status: the GitHub connector can read the repository and confirms write permission, but local Git HTTPS requests encountered a reset and a port-443 connection failure. Restore Git connectivity and check `git ls-remote origin` before publishing. Git push authentication has not been exercised; connector access is not proof of a successful local Git push.
+
 ## 已准备 / Prepared
 
 - `main` 作为主分支，`origin` 指向上述仓库；本地提交记录可用 `git log -1 --oneline` 检查。
