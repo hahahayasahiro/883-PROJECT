@@ -91,8 +91,8 @@ deck = ROOT / 'deliverables/SmartCampus-enhanced-presentation.pptx'
 with zipfile.ZipFile(deck) as archive:
     slides = sorted((n for n in archive.namelist() if re.fullmatch(r'ppt/slides/slide\d+\.xml', n)),
                     key=lambda n: int(re.search(r'(\d+)\.xml', n).group(1)))
-    texts = [' '.join(ET.fromstring(archive.read(n)).findall('.//a:t', ns)[i].text or ''
-                      for i in range(len(ET.fromstring(archive.read(n)).findall('.//a:t', ns)))) for n in slides]
+    texts = [' '.join(node.text or '' for node in ET.fromstring(archive.read(n)).findall('.//a:t', ns))
+             for n in slides]
     check(len(slides) == 13, 'Current deck must have 13 slides')
     notes_count = sum(bool(re.fullmatch(r'ppt/notesSlides/notesSlide\d+\.xml', n)) for n in archive.namelist())
     check(notes_count == 13, 'Every slide must have speaker notes')

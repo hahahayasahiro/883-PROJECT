@@ -21,10 +21,16 @@ Conclusion: the current release covers the introduction, responsibilities, progr
 | 持久化与升级 / Persistence and upgrades | 已验证 / Tested | 重复迁移、旧库副本迁移、记录与账号保留；升级不重置。 |
 | 自动化测试 / Automated tests | 34通过 / 34 passed locally | 本次重跑，本机原数据库副本可用；干净分发没有旧库副本时该专用用例会跳过。 |
 | 依赖完整性 / Dependencies | 通过 / Passed | `pip check`无破损依赖；一个TestClient弃用警告仍存在，不影响本次结果。 |
+| 干净副本安装 / Clean-copy installation | 通过 / Passed | 仅从本地Git提交克隆，在同一电脑重新创建环境并安装锁定依赖；自动生成空白密钥配置及种子数据库；33通过、1跳过旧库专用用例。 |
+| 干净副本启动 / Clean-copy startup | 通过 / Passed | 独立本机端口启动，4个账号、六模块资源及相应读取接口通过；缺少密钥时问答正确显示retrieval_only；4账号、10课程、8场地、15知识条目。 |
 
 Real AI connectivity was demonstrated earlier for conversation, pre-review, field extraction and classification; this audit does not relabel mock tests as new live-AI checks. Broader accuracy evaluation is pending. The local database and key are preserved privately.
 
 真实AI连接证据来自此前独立调用，本次自动测试使用隔离数据、模拟与降级路径，不将其描述为新一轮真实AI验证。本机数据库和密钥继续保留在本地。
+
+After the K15 wording correction, normal initialization preserved all checked business-table row counts, user password hashes and the private configuration byte-for-byte. No local reset was performed. The clean-copy server was stopped after verification; the original demo server was not replaced.
+
+K15描述修正后的正常初始化保留了检查范围内所有业务表记录数量、账号密码散列以及配置文件原内容，未重置数据。干净副本验证结束后已停止其临时服务，未替换原演示服务。
 
 ## 汇报材料 / Presentation package
 
@@ -64,3 +70,7 @@ The changes correct documentation, repository packaging and setup failure report
 目标仓库为公开的hahahayasahiro/883-PROJECT，检查时为空且当前连接账号有写权限。已在应用目录建立本地Git仓库并设置origin；后续以Git状态与提交记录为准。准备期间没有执行push，也未创建线上PR、分支或Release。
 
 The target repository was empty and accessible with write permission when checked. The local repository uses this application directory as its root and points origin to the target. No remote push, PR, branch or Release is implied by preparation. The repository audit checks candidate-file paths, size, private-key byte patterns and Office archive contents; it does not perform OCR or transcribe recordings. Current screenshots and recorded flows use synthetic data and avoid private configuration screens.
+
+The reviewed upload set contains 119 files (approximately 15 MB before Git compression), including source, tests, both current and clearly labelled historical presentation materials, the manual and proposal copies. The initial local commit and subsequent review-evidence commit are preparation records under the configured repository account; they are not six members' individual contribution history. Six local module branches start at the reviewed baseline. GitHub Actions is configured but has not been executed remotely during this preparation.
+
+本次待上传共119个文件，压缩前约15 MB；本地提交仅记录当前整理后的基线，不冒充六名组员分别提交的历史。六个本地模块分支从检查后的基线开始。GitHub Actions已配置，准备阶段尚未在线运行。
