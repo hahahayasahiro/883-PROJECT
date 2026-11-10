@@ -1,0 +1,37 @@
+// Uses the supplied Playwright runtime. Records actual browser interactions.
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const fs=require('fs');
+const path=require('path');
+const root=path.resolve(__dirname,'..');
+(async()=>{
+ const browser=await chromium.launch({channel:'chrome',headless:true});
+ const context=await browser.newContext({viewport:{width:1440,height:1000},recordVideo:{dir:path.join(root,'deliverables','video'),size:{width:1440,height:1000}}});
+ const page=await context.newPage();const errors=[];
+ page.on('pageerror',e=>errors.push(e.message));
+ page.on('console',m=>{if(m.type()==='error'&&!m.text().includes('status of 401')&&!m.text().includes('status of 409'))errors.push(m.text());});
+ const pause=()=>page.waitForTimeout(1700);
+ const shot=async name=>{await pause();await page.screenshot({path:path.join(root,'deliverables','screenshots',name+'.png'),fullPage:true});};
+ const login=async name=>{await page.locator('[name=username]').fill(name);await page.locator('[name=password]').fill('Campus2026!');await page.locator('#signin button').click();await page.locator('#shell').waitFor({state:'visible'});await page.getByRole('heading',{name:/Good to see you/}).waitFor();await pause();};
+ const nav=async hash=>{await page.locator(`nav a[href="#${hash}"]`).click();};
+ const logout=async()=>{await page.locator('#logout').click();await page.locator('#login').waitFor({state:'visible'});};
+ fs.mkdirSync(path.join(root,'deliverables','screenshots'),{recursive:true});
+ await page.goto('http://127.0.0.1:8000');await page.locator('#signin').waitFor();await shot('01-login');
+ await login('student');await shot('02-overview');
+ await nav('assistant');await page.locator('#question button').click();await page.locator('#reply .source').first().waitFor();await shot('03-assistant');
+ await nav('learning');await page.getByRole('heading',{name:'Your course record'}).waitFor();await shot('04-learning');
+ await nav('facilities');await page.locator('#booking button').click();await page.getByText('Booking confirmed.',{exact:true}).waitFor();await pause();
+ await page.locator('#booking button').click();await page.getByText(/This room is already booked/).waitFor();await shot('05-booking-conflict');
+ await page.locator('#fault textarea').fill('Demo projector has a flickering image.');await page.locator('#fault button').click();await page.getByRole('heading',{name:'Your reported faults'}).waitFor();await shot('06-student-tickets');
+ await nav('reviews');await page.locator('#draft button').first().click();await page.locator('#review-result').getByText(/different student ID/).waitFor();await shot('07-review-issue');
+ await page.locator('[name=material]').fill('My student ID is S1001. Please provide my transcript for an internship.');await page.locator('#draft button').first().click();await page.getByText('Deterministic field checks passed.',{exact:true}).waitFor();await shot('08-review-corrected');
+ await nav('applications');await page.locator('.submit').first().click();await page.getByText('Application submitted to staff.',{exact:true}).waitFor();await shot('09-submitted');
+ await logout();await login('maintenance');await nav('maintenance');await page.locator('.advance[data-next="in_progress"]').last().click();await page.getByText('Maintenance ticket updated.',{exact:true}).waitFor();await pause();await page.locator('input[id^="cost-"]').last().fill('35');await page.locator('.advance[data-next="completed"]').last().click();await pause();await shot('10-maintenance');
+ await logout();await login('admin');await nav('applications');await page.locator('input[id^="note-"]').first().fill('Verified synthetic student details. Ready to issue.');await page.locator('.decision[data-status="approved"]').first().click();await page.getByText('Decision saved.',{exact:true}).waitFor();await shot('11-admin-decision');
+ await logout();await login('student');await nav('applications');await page.getByText('Staff decision: Verified synthetic student details. Ready to issue.').waitFor();await shot('12-student-approved');
+ await page.reload();await page.getByText('Staff decision: Verified synthetic student details. Ready to issue.').waitFor();
+ await page.setViewportSize({width:390,height:844});await nav('home');await shot('13-mobile');
+ const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);if(overflow)errors.push('Mobile horizontal overflow');
+ await context.close();const video=await page.video().path();const final=path.join(root,'deliverables','SmartCampus-demo-offline.webm');fs.copyFileSync(video,final);await browser.close();
+ fs.writeFileSync(path.join(root,'deliverables','browser-results.json'),JSON.stringify({errors,flows:['study sources and learning rules','booking conflict and fault-to-maintenance','pre-review correction and staff decision','refresh persistence','390px responsive layout'],video:'SmartCampus-demo-offline.webm'},null,2));
+ if(errors.length){console.error(errors);process.exitCode=1;}else console.log('Browser workflows passed. Recorded actual UI demonstration (AI unavailable mode).');
+})().catch(e=>{console.error(e);process.exitCode=1;});

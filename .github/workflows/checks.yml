@@ -1,0 +1,30 @@
+name: Project checks
+
+on:
+  push:
+    branches: [main, 'module/**']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements-lock.txt
+      - name: Install locked dependencies
+        run: python -m pip install -r requirements-lock.txt
+      - name: Check dependencies
+        run: python -m pip check
+      - name: Check project and presentation package
+        run: python tools/check-readiness.py
+      - name: Run isolated tests without live AI credentials
+        run: python -m pytest -q --junitxml=.build/ci-tests.xml

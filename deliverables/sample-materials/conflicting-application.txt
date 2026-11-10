@@ -1,0 +1,6 @@
+Student ID: S9999
+Full name: Alex Morgan
+Email: student@gcu.example
+Purpose: Internship at Fictional Campus Lab
+
+Please issue a transcript for this internship. This is fictional demonstration material.

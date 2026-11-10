@@ -1,0 +1,17 @@
+{
+  "errors": [],
+  "application_id": 6,
+  "flows": [
+    "conversation persistence",
+    "interest-ranked saved plan",
+    "search, conflict alternatives and modification",
+    "AI fault classification confirmation",
+    "TXT upload and AI candidates",
+    "versioned evidence review",
+    "return-notify-revise-resubmit-approve",
+    "repair log and cost",
+    "persistent energy filters",
+    "390px layout"
+  ],
+  "live_ai": true
+}
